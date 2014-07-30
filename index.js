@@ -72,14 +72,20 @@ function save (range, doc) {
 
 function load (info) {
   var range = info.range;
+  var parent = info.parent;
 
-  var end = info.parent.getElementsByClassName(info.id  + '-end')[0];
+  // ensure that "parent" is not a TextNode
+  while (parent && parent.nodeType === 3 /* Node.TEXT_NODE */) {
+    parent = parent.parentNode;
+  }
+
+  var end = parent.getElementsByClassName(info.id  + '-end')[0];
   range.setEndAfter(end);
 
   if (info.collapsed) {
     range.setStartBefore(end);
   } else {
-    var start = info.parent.getElementsByClassName(info.id  + '-start')[0];
+    var start = parent.getElementsByClassName(info.id  + '-start')[0];
     range.setStartBefore(start);
 
     start.parentNode.removeChild(start);
