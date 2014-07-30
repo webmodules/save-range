@@ -1,0 +1,34 @@
+{
+  "name": "save-range",
+  "version": "0.0.0",
+  "description": "Uses DOM markers to save a Range's boundaries for loading later",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/webmodules/save-range.git"
+  },
+  "keywords": [
+    "dom",
+    "range",
+    "save",
+    "load",
+    "restore",
+    "revive",
+    "marker",
+    "selection"
+  ],
+  "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/webmodules/save-range/issues"
+  },
+  "homepage": "https://github.com/webmodules/save-range",
+  "dependencies": {
+    "component-uid": "0.0.2",
+    "get-document": "~0.1.1",
+    "range-insert-node": "0.0.1"
+  }
+}
