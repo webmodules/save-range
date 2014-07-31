@@ -77,13 +77,14 @@ describe('save-range', function () {
 
     // now destory the HTML DOM references on the `info` object by re-parsing the
     // `innerHTML` on the div
-    div.innerHTML = html;
+    div.innerHTML = div.innerHTML;
 
     // test that the previous <b> is now detached
     assert(!b.parentNode);
     assert(b !== div.firstChild);
 
     // load Range
+    assert(div === info.parent);
     var r2 = saveRange.load(info);
 
     // TODO: test that the returned Range is properly set up
