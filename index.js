@@ -6,6 +6,7 @@
 var uid = require('component-uid');
 var getDocument = require('get-document');
 var insertNode = require('range-insert-node');
+var debug = require('debug')('save-range');
 
 /**
  * Module exports.
@@ -28,13 +29,21 @@ exports.load = load;
 
 function save (range, doc) {
   if (!doc) doc = getDocument(range) || document;
+  var parent = range.commonAncestorContainer;
+
+  // ensure that "parent" is not a TextNode
+  while (parent && parent.nodeType === 3 /* Node.TEXT_NODE */) {
+    parent = parent.parentNode;
+  }
 
   var info = {
     id: uid(8),
     range: range,
-    parent: range.commonAncestorContainer,
+    document: doc,
+    parent: parent,
     collapsed: Boolean(range.collapsed)
   };
+  debug('generated id %o to save Range instance', info.id);
 
   // end marker
   var endRange = range.cloneRange();
@@ -42,16 +51,20 @@ function save (range, doc) {
 
   var endMarker = doc.createElement('span');
   endMarker.className = 'save-range-marker ' + info.id + '-end';
+  debug('inserting "end marker" %o', endMarker);
 
   insertNode(endRange, endMarker);
 
   // start marker (if not `collapsed`)
-  if (!info.collapsed) {
+  if (info.collapsed) {
+    debug('skipping "start marker" because Range is `collapsed`');
+  } else {
     var startRange = range.cloneRange();
     startRange.collapse(true);
 
     var startMarker = doc.createElement('span');
     startMarker.className = 'save-range-marker ' + info.id + '-start';
+    debug('inserting "start marker" %o', startMarker);
 
     insertNode(startRange, startMarker);
   }
@@ -64,34 +77,42 @@ function save (range, doc) {
  * a prevous call to `save()`.
  *
  * @param {Object} info - the serialized Range info object returned from
- *    a previous `save()` call
+ *    a previous `save()` call.
+ * @param {Element} [parent] - Optional explicit `parent` DOM element to check for
+ *    the DOM markers inside of.
  * @return {Range} return a Range instance with its boundaries set to the original
- *    points from the `save()` call
+ *    points from the `save()` call.
  * @public
  */
 
-function load (info) {
+function load (info, parent) {
   var range = info.range;
-  var parent = info.parent;
-
-  // ensure that "parent" is not a TextNode
-  while (parent && parent.nodeType === 3 /* Node.TEXT_NODE */) {
-    parent = parent.parentNode;
-  }
+  if (!parent) parent = info.parent || info.document;
+  debug('loading Range using parent %o', parent);
 
   var end = parent.getElementsByClassName(info.id  + '-end')[0];
-  range.setEndAfter(end);
-
-  if (info.collapsed) {
-    range.setStartBefore(end);
+  if (end) {
+    range.setEndAfter(end);
   } else {
-    var start = parent.getElementsByClassName(info.id  + '-start')[0];
-    range.setStartBefore(start);
-
-    start.parentNode.removeChild(start);
+    debug('could not find DOM marker with class name %o', info.id  + '-end');
   }
 
-  end.parentNode.removeChild(end);
+  if (info.collapsed) {
+    if (end) range.setStartBefore(end);
+  } else {
+    var start = parent.getElementsByClassName(info.id  + '-start')[0];
+    if (start) {
+      range.setStartBefore(start);
+
+      // remove "start marker" from the DOM
+      start.parentNode.removeChild(start);
+    } else {
+      debug('could not find DOM marker with class name %o', info.id  + '-start');
+    }
+  }
+
+  // remove "end marker" from the DOM
+  if (end) end.parentNode.removeChild(end);
 
   return range;
 }
