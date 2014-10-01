@@ -1,4 +1,11 @@
 
+1.0.0 / 2014-10-01
+==================
+
+ * package: update "range-insert-node" to v1.0.1
+ * package: update "debug" to v2.0.0
+ * bumping to v1.0.0 for more well-defined semver behavior
+
 0.0.2 / 2014-07-30
 ==================
 
