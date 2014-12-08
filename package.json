@@ -31,5 +31,8 @@
     "debug": "2",
     "get-document": "~0.1.1",
     "range-insert-node": "~1.0.1"
+  },
+  "devDependencies": {
+    "zuul": "~1.15.2"
   }
 }
