@@ -3,10 +3,21 @@ var assert = require('assert');
 var saveRange = require('../');
 
 describe('save-range', function () {
+  var div;
+
+  afterEach(function () {
+    if (div) {
+      // clean up...
+      document.body.removeChild(div);
+      div = null;
+    }
+  });
 
   it('save() and load() a Range instance', function () {
-    var div = document.createElement('div');
+    div = document.createElement('div');
     div.innerHTML = '<b>f<i>o<u>o bar</u></i></b> baz';
+    div.setAttribute('contenteditable', 'true');
+    document.body.appendChild(div);
 
     var html = div.innerHTML;
 
@@ -30,8 +41,10 @@ describe('save-range', function () {
   });
 
   it('save() and load() a `collapsed` Range instance', function () {
-    var div = document.createElement('div');
+    div = document.createElement('div');
     div.innerHTML = '<b>f<i>o<u>o bar</u></i></b> baz';
+    div.setAttribute('contenteditable', 'true');
+    document.body.appendChild(div);
 
     var html = div.innerHTML;
 
@@ -63,8 +76,11 @@ describe('save-range', function () {
   });
 
   it('save() and load() a Range through HTML serialization', function () {
-    var div = document.createElement('div');
+    div = document.createElement('div');
     div.innerHTML = '<b>f<i>o<u>o bar</u></i></b> baz';
+    div.setAttribute('contenteditable', 'true');
+    document.body.appendChild(div);
+
     var html = div.innerHTML;
     var b = div.firstChild;
 
@@ -91,8 +107,10 @@ describe('save-range', function () {
   });
 
   it('save() and load() a Range with explicit `parent` given', function () {
-    var div = document.createElement('div');
+    div = document.createElement('div');
     div.innerHTML = '<b>f<i>o<u>o bar</u></i></b> baz';
+    div.setAttribute('contenteditable', 'true');
+    document.body.appendChild(div);
 
     var range = document.createRange();
     range.setStart(div.firstChild.childNodes[1].childNodes[1].firstChild, 1);
