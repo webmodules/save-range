@@ -59,6 +59,9 @@ function save (range, doc) {
   if (info.collapsed) {
     debug('skipping "start marker" because Range is `collapsed`');
   } else {
+    var startNode = range.startContainer;
+    var startOffset = range.startOffset;
+
     var startRange = range.cloneRange();
     startRange.collapse(true);
 
@@ -67,6 +70,12 @@ function save (range, doc) {
     debug('inserting "start marker" %o', startMarker);
 
     insertNode(startRange, startMarker);
+
+    if (startNode.nodeType === 3) {
+      startNode = startMarker.nextSibling;
+      startOffset = 0;
+      range.setStart(startNode, startOffset);
+    }
   }
 
   return info;

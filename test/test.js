@@ -13,7 +13,7 @@ describe('save-range', function () {
     }
   });
 
-  it('save() and load() a Range instance', function () {
+  it('should save() and load() a Range instance', function () {
     div = document.createElement('div');
     div.innerHTML = '<b>f<i>o<u>o bar</u></i></b> baz';
     div.setAttribute('contenteditable', 'true');
@@ -24,6 +24,7 @@ describe('save-range', function () {
     var range = document.createRange();
     range.setStart(div.firstChild.childNodes[1].childNodes[1].firstChild, 1);
     range.setEnd(div.childNodes[1], 3);
+    assert.equal(' bar ba', range.toString());
 
     // save Range
     var info = saveRange(range);
@@ -33,14 +34,20 @@ describe('save-range', function () {
 
     // load Range
     var r2 = saveRange.load(info);
+    div.normalize();
 
     // test that the DOM is back to original state
     assert.equal(html, div.innerHTML);
 
-    // TODO: test that the returned Range is properly set up
+    // test that the Range remains the same
+    assert.equal(' bar ba', range.toString());
+    assert(range.startContainer === div.firstChild.childNodes[1].childNodes[1].firstChild, '`startContainer` doesn\'t match');
+    assert(range.startOffset === 1, '`startOffset` doesn\'t match')
+    assert(range.endContainer === div.childNodes[1], '`endContainer` doesn\'t match');
+    assert(range.endOffset === 3, '`endOffset` doesn\'t match');
   });
 
-  it('save() and load() a `collapsed` Range instance', function () {
+  it('should save() and load() a `collapsed` Range instance', function () {
     div = document.createElement('div');
     div.innerHTML = '<b>f<i>o<u>o bar</u></i></b> baz';
     div.setAttribute('contenteditable', 'true');
@@ -75,7 +82,7 @@ describe('save-range', function () {
     assert(r2.collapsed);
   });
 
-  it('save() and load() a Range through HTML serialization', function () {
+  it('should save() and load() a Range through HTML serialization', function () {
     div = document.createElement('div');
     div.innerHTML = '<b>f<i>o<u>o bar</u></i></b> baz';
     div.setAttribute('contenteditable', 'true');
@@ -87,6 +94,7 @@ describe('save-range', function () {
     var range = document.createRange();
     range.setStart(div.firstChild.childNodes[1].childNodes[1].firstChild, 1);
     range.setEnd(div.childNodes[1], 3);
+    assert.equal(' bar ba', range.toString());
 
     // save Range
     var info = saveRange(range);
@@ -102,11 +110,17 @@ describe('save-range', function () {
     // load Range
     assert(div === info.parent);
     var r2 = saveRange.load(info);
+    div.normalize();
 
-    // TODO: test that the returned Range is properly set up
+    // test that the Range remains the same
+    assert.equal(' bar ba', range.toString());
+    assert(range.startContainer === div.firstChild.childNodes[1].childNodes[1].firstChild, '`startContainer` doesn\'t match');
+    assert(range.startOffset === 1, '`startOffset` doesn\'t match')
+    assert(range.endContainer === div.childNodes[1], '`endContainer` doesn\'t match');
+    assert(range.endOffset === 3, '`endOffset` doesn\'t match');
   });
 
-  it('save() and load() a Range with explicit `parent` given', function () {
+  it('should save() and load() a Range with explicit `parent` given', function () {
     div = document.createElement('div');
     div.innerHTML = '<b>f<i>o<u>o bar</u></i></b> baz';
     div.setAttribute('contenteditable', 'true');
@@ -130,6 +144,28 @@ describe('save-range', function () {
 
     // test that the <em> is now the "common ancestor container"
     assert(r2.commonAncestorContainer === em);
+  });
+
+  it('should save() a Range and not modify its boundaries', function () {
+    div = document.createElement('div');
+    div.innerHTML = 'h<b>ello worl</b>d';
+    div.setAttribute('contenteditable', 'true');
+    document.body.appendChild(div);
+
+    var range = document.createRange();
+    range.setStart(div.childNodes[1].firstChild, 0);
+    range.setEnd(div.childNodes[1].firstChild, 9);
+    assert.equal('ello worl', range.toString());
+
+    // save Range
+    var info = saveRange(range);
+
+    // test that the Range remains the same
+    assert.equal('ello worl', range.toString());
+    assert(range.startContainer === div.childNodes[1].childNodes[1], '`startContainer` doesn\'t match');
+    assert(range.startOffset === 0, '`startOffset` doesn\'t match')
+    assert(range.endContainer === div.childNodes[1].childNodes[1], '`endContainer` doesn\'t match');
+    assert(range.endOffset === 9, '`endOffset` doesn\'t match');
   });
 
 });
