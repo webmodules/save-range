@@ -29,7 +29,7 @@
   "dependencies": {
     "component-uid": "0.0.2",
     "debug": "2",
-    "get-document": "~0.1.1",
+    "get-document": "1",
     "range-insert-node": "~1.0.1"
   },
   "devDependencies": {
