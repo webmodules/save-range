@@ -1,4 +1,10 @@
 
+1.1.1 / 2015-03-10
+==================
+
+  * handle cursor at the end of text nodes
+  * package: allow any "zuul" v2
+
 1.1.0 / 2015-01-26
 ==================
 

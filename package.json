@@ -1,6 +1,6 @@
 {
   "name": "save-range",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Uses DOM markers to save a Range's boundaries for loading later",
   "main": "index.js",
   "scripts": {
