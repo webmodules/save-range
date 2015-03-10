@@ -72,8 +72,13 @@ function save (range, doc) {
     insertNode(startRange, startMarker);
 
     if (startNode.nodeType === 3) {
-      startNode = startMarker.nextSibling;
-      startOffset = 0;
+      if (startMarker.nextSibling) {
+        startNode = startMarker.nextSibling;
+        startOffset = 0;
+      } else if (startMarker.previousSibling) {
+        startNode = startMarker.previousSibling;
+        startOffset = startNode.nodeValue.length;
+      }
       range.setStart(startNode, startOffset);
     }
   }

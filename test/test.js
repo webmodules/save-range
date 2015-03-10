@@ -168,4 +168,43 @@ describe('save-range', function () {
     assert(range.endOffset === 9, '`endOffset` doesn\'t match');
   });
 
+  it('should save() and load() a Range selecting text at the end of 2 different Ps', function () {
+    div = document.createElement('div');
+    div.innerHTML = '<p>asfd</p>' +
+                    '<p><strong>asfd</strong></p>';
+    div.setAttribute('contenteditable', 'true');
+    document.body.appendChild(div);
+
+    var range = document.createRange();
+    range.setStart(div.firstChild.firstChild, 4);
+    range.setEnd(div.lastChild.firstChild.firstChild, 4);
+    assert.equal('asfd', range.toString());
+
+    // save Range
+    var info = saveRange(range);
+
+    // now transfer the child nodes of the <div> into a new DOM element
+    var strong = div.lastChild.firstChild;
+    assert.equal('STRONG', strong.nodeName);
+    while (strong.firstChild) {
+      div.lastChild.appendChild(strong.firstChild);
+    }
+    strong.parentNode.removeChild(strong);
+
+    // load Range
+    var r2 = saveRange.load(info, div);
+
+    assert.equal('asfd', range.toString());
+    assert(range.startContainer === div.firstChild, '`startContainer` doesn\'t match');
+    assert(range.startOffset === 1, '`startOffset` doesn\'t match')
+    assert(range.endContainer === div.lastChild, '`endContainer` doesn\'t match');
+    assert(range.endOffset === 1, '`endOffset` doesn\'t match');
+
+    // this is what we really *want*, but the above works as well…
+    //assert(range.startContainer === div.firstChild.firstChild, '`startContainer` doesn\'t match');
+    //assert(range.startOffset === 4, '`startOffset` doesn\'t match')
+    //assert(range.endContainer === div.lastChild.firstChild, '`endContainer` doesn\'t match');
+    //assert(range.endOffset === 4, '`endOffset` doesn\'t match');
+  });
+
 });
