@@ -33,6 +33,6 @@
     "range-insert-node": "~1.0.1"
   },
   "devDependencies": {
-    "zuul": "~1.16.3"
+    "zuul": "2"
   }
 }
